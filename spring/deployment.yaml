@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring
+  labels:
+    app.kubernetes.io/name: spring
+    app.kubernetes.io/instance: spring
+    app.kubernetes.io/version: "2"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: spring
+      app.kubernetes.io/instance: spring
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: spring
+        app.kubernetes.io/instance: spring
+    spec:
+      containers:
+        - name: spring
+          env:
+          - name: TZ
+            value: Asia/Shanghai
+          image: "spring:2"
+          imagePullPolicy: Always
+          ports:
+            - name: spring
+              containerPort: 8772
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 12
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: spring
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 12
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: spring
+            timeoutSeconds: 5
+          resources:
+            limits:
+              memory: 2Gi
+              cpu: "1"
+            requests:
+              memory: 1Gi
+              cpu: "0.5"
+          volumeMounts:
+          - mountPath: /app/application.properties
+            name: config
+            subPath: application.properties
+      volumes:
+      - secret:
+          defaultMode: 256
+          items:
+          - key: application.properties
+            path: application.properties
+          secretName: spring
+          optional: true
+        name: config

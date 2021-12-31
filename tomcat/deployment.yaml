@@ -1,0 +1,85 @@
+---
+# Source: tomcat/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat
+  labels:
+    app.kubernetes.io/name: tomcat
+    app.kubernetes.io/instance: tomcat
+    app.kubernetes.io/version: "8.5"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tomcat
+      app.kubernetes.io/instance: tomcat
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        field.cattle.io/workloadMetrics: '[{"port":9080,"schema":"HTTP"}]'
+      labels:
+        app.kubernetes.io/name: tomcat
+        app.kubernetes.io/instance: tomcat
+    spec:
+      containers:
+        - name: tomcat
+          env:
+          - name: TZ
+            value: Asia/Shanghai
+          - name: CATALINA_OPTS
+            value: "-XX:MaxRAMPercentage=90.0 -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.port=9081 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+          image: "tomcat:8.5"
+          imagePullPolicy: Always
+          ports:
+            - name: tomcat
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 12
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: tomcat
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 12
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: tomcat
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: 1.5Gi
+              cpu: "0.2"
+          volumeMounts:
+          - mountPath: /apply_env.sh
+            name: apply-env
+            readOnly: true
+            subPath: apply_env.sh
+        - name: exporter
+          image: registry.adm.cheersmind.qst/helper/tomcat-jmx-exporter:0.14.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: 0.2Gi
+              cpu: "0.1"
+          ports:
+          - containerPort: 9080
+            name: exporter
+            protocol: TCP
+      volumes:
+      - configMap:
+          defaultMode: 256
+          items:
+          - key: apply_env.sh
+            mode: 493
+            path: apply_env.sh
+          name: scripts
+          optional: true
+        name: apply-env

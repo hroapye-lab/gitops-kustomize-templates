@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: static
+    app.kubernetes.io/instance: static
+  name: static
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: static
+      app.kubernetes.io/instance: static
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: static
+        app.kubernetes.io/instance: static
+    spec:
+      containers:
+      - image: nginx:alpine
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 2
+          successThreshold: 1
+          tcpSocket:
+            port: 80
+          timeoutSeconds: 2
+        name: static
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 2
+          successThreshold: 2
+          tcpSocket:
+            port: 80
+          timeoutSeconds: 2

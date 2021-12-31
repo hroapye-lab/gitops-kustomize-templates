@@ -1,0 +1,20 @@
+---
+# Source: tomcat/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat
+  labels:
+    app.kubernetes.io/name: tomcat
+    app.kubernetes.io/instance: tomcat
+    app.kubernetes.io/version: "8.5"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: tomcat
+      protocol: TCP
+      name: tomcat
+  selector:
+    app.kubernetes.io/name: tomcat
+    app.kubernetes.io/instance: tomcat

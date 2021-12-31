@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strapi
+  labels:
+    app.kubernetes.io/name: strapi
+    app.kubernetes.io/instance: strapi
+    app.kubernetes.io/version: "3"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: strapi
+      app.kubernetes.io/instance: strapi
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: strapi
+        app.kubernetes.io/instance: strapi
+    spec:
+      containers:
+        - name: strapi
+          envFrom:
+            - configMapRef:
+                name: strapi
+            - secretRef:
+                name: strapi
+          image: "strapi:3"
+          imagePullPolicy: Always
+          ports:
+            - name: strapi
+              containerPort: 1337
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 12
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: strapi
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 12
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: strapi
+            timeoutSeconds: 5
+          resources:
+            limits:
+              memory: 1Gi
+              cpu: "1"
+            requests:
+              memory: 200Mi
+              cpu: "0.2"
+          volumeMounts:
+            - name: volume-localtime
+              mountPath: /etc/localtime
+      volumes:
+        - name: volume-localtime
+          hostPath:
+            path: /etc/localtime
+            type: ''
