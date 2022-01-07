@@ -4,7 +4,9 @@ resources:
 - deployment.yaml
 - service.yaml
 - configmap.yaml
-- secret.yaml
+secretGenerator:
+  - name: spring
+    type: Opaque
 configurations:
   - sealed-secret-config.yaml
 generatorOptions:
