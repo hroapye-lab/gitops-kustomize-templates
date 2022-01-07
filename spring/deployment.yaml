@@ -59,12 +59,17 @@ spec:
           - mountPath: /app/application.properties
             name: config
             subPath: application.properties
+          - mountPath: /app/application-prod.properties
+            name: config
+            subPath: application-prod.properties
       volumes:
       - secret:
           defaultMode: 256
           items:
           - key: application.properties
             path: application.properties
+          - key: application.properties
+            path: application-prod.properties
           secretName: spring
           optional: true
         name: config
