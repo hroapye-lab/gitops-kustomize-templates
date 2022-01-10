@@ -7,8 +7,6 @@ resources:
 secretGenerator:
   - name: spring
     type: Opaque
-    literals:
-      - application.properties=''
 configurations:
   - sealed-secret-config.yaml
 generatorOptions:
