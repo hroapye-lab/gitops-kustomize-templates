@@ -28,7 +28,7 @@ spec:
                 name: strapi
             - secretRef:
                 name: strapi
-          image: "strapi:3"
+          image: "strapi/strapi:3"
           imagePullPolicy: Always
           ports:
             - name: strapi
