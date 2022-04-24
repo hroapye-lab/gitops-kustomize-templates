@@ -14,8 +14,8 @@ spec:
     matchLabels:
       app.kubernetes.io/name: tomcat
       app.kubernetes.io/instance: tomcat
-  strategy:
-    type: Recreate
+  # strategy:
+  #   type: Recreate
   template:
     metadata:
       annotations:

@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/version: "2"
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+  # strategy:
+  #   type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: spring
@@ -50,11 +50,11 @@ spec:
             timeoutSeconds: 5
           resources:
             limits:
-              memory: 2Gi
+              memory: 1Gi
               cpu: "1"
             requests:
-              memory: 1Gi
-              cpu: "0.5"
+              memory: 500Mi
+              cpu: "0.2"
           volumeMounts:
           - mountPath: /app/application.properties
             name: config
